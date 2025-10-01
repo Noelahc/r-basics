@@ -66,7 +66,8 @@ You can tell the type of a data object using the `class()` function. Some common
 
 - Factor (ordinal): `factor(c("medium", "small", "large", "small"))`
 
-- Missing: `NA`
+- Missing: `NA`, 'NA_integer'
+- 
 
 
 There are also more esoteric ones that you learn as you need them.
@@ -187,7 +188,8 @@ How would you find the median of `x`? How about the 90th percentile?
 :::
 
 ```{r}
-# your code goes here
+median(x)
+quantile(x,0.9)
 ```
 
 :::{.callout-tip title="Test your understanding"}
@@ -196,7 +198,8 @@ Use `c()` to add a missing value to the start of the vector `x`. How does that i
 :::
 
 ```{r}
-# your code goes here
+x=c(NA,x)
+c(mean(x),median(x),quantile(x,0.9))
 ``` 
 
 ## Matricies and Arrays 
@@ -216,6 +219,7 @@ Make a 3 by 2 matrix $B$ containing the numbers 1 to 6.
 
 ```{r}
 # your code goes here
+B=matrix(1:6,nrow=3,ncol=2)
 ```
 
 :::{.callout-tip title="Test your understanding"}
@@ -224,7 +228,7 @@ Use `%*% to calculate $AB$.
 :::
 
 ```{r}
-# your code goes here
+A%*%B
 ```
 
 :::{.callout-tip title="Test your understanding"}
@@ -242,7 +246,9 @@ $$ {#eq-matrix-c}
 
 
 ```{r}
-#your code goes here
+vec=c(1,1,0,0,1,1,0,0,1)
+C=matrix(vec,nrow=3,byrow=TRUE)
+C_inv=solve(C)
 ```
 
 You will often want to calculate row-wise or column-wise summary statistics of matrices and other grid-like data structures. 
@@ -273,7 +279,7 @@ Calculate the column means of $C$ and the row medians of $C^{-1}$.
 :::
 
 ```{r}
-# Your code goes here
+matrix(c(colMeans(C), apply(C_inv,MARGIN=1,FUN=median)),nrow=2,byrow=TRUE)
 ```
 
 :::{.callout-tip}
@@ -289,7 +295,7 @@ To show the documentation for a function, put a question mark before its name. `
 
 :::{.callout-tip title="Test your understanding"}
 
-- What is the second argument of `max()` and what does it do? 
+- What is the second argument of `max()` and what does it do? na.rm: include or exclude NA
 
 - Look at the documentation for `rowSums()`. What subtle difference is there between `rowSums(A)` and `apply(X = A, MARGIN = 1, FUN = sum)`?
 :::
@@ -360,7 +366,7 @@ Subset the `grades` data frame to extract the id and score of the students whose
 :::
 
 ```{r}
-# your code goes here
+grades[grades$score >= 87, c('student_id','score')]
 ```
 
 :::{.callout-tip title="Test your understanding"}
@@ -369,7 +375,8 @@ Is there any difference between `grades$class` and `grades[ ,"class"]`?
 :::
 
 ```{r}
-# your code goes here
+grades$class
+grades[,"class"]
 ```
 
 You can add elements to a data.frame by assigning them to non-existent columns or rows. (Be careful of the latter!) 
@@ -382,6 +389,19 @@ grades$gender <- rep("Female", 6)
 
 Make up a vector with an additional entry and try adding it as a 7th row of `grades`. What happens? Why do you think that happens? 
 :::
+```{r}
+grades[7,]<-c(7,55,'Pass',TRUE,6,'Male')
+
+extra<-data.frame(
+  student_id=7,
+  score=NA,
+  class=NA,
+  pass=NA,
+  grades=7,
+  gender='Male'
+)
+rbind(grades,extra)
+```
 
 ## Lists 
 
@@ -446,9 +466,14 @@ Follow the previous example to use `saveRDS()` and `readRDS()` to save the `zv` 
 :::
 
 ```{r}
-# your code goes here
+saveRDS(zv,"zv.rds")
 ```
-
+```{r}
+rm(zv)
+```
+```{r}
+zv=readRDS("zv.rds")
+```
 > **Note:** It is important to know where R is running. This is the so-called working directory). Use `pwd` in the terminal or `getwd()` in R to find this out.
 >
 > If your code is run from a notebook document like Rmd, qmd and jupytper notebook code and any file paths will be run from the location of the notebook.
